@@ -18,27 +18,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
+@Table(name = "catagories")
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserEntity {
+public class CategoryEntity {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer categoryId;
 	
-	@Column(name = "user_name", nullable = false, length = 100)
-	private String name;
+	@Column(name = "title", length = 100, nullable = false)
+	private String categoryTitle;
 	
-	private String email;
+	@Column(name = "description")
+	private String categoryDescription;
 	
-	private String password;
-	
-	private String about;
-	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<PostEntity> posts = new HashSet<>();
-
 
 }
