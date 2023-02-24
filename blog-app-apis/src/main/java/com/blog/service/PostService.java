@@ -4,6 +4,7 @@ import java.util.List;
 
 
 import com.blog.model.PostDto;
+import com.blog.model.PostResponseDto;
 
 public interface PostService {
 	
@@ -17,16 +18,16 @@ public interface PostService {
 	public void deletePost(Integer postId);
 	
 	//get all posts
-	public List<PostDto> getAllPost();
+	public PostResponseDto getAllPost(Integer pageNumber, Integer pageSize);
 	
 	//get single post
 	public PostDto getPostById(Integer postId);
 	
 	//get all post by category
-	public List<PostDto> getPostsByCategory(Integer categoryId);
+	public PostResponseDto getPostsByCategory(Integer categoryId, Integer pageNumber, Integer pageSize);
 	
 	//get all posts by user
-	public List<PostDto> getPostsByUser(Integer userId);
+	public PostResponseDto getPostsByUser(Integer userId, Integer pageNumber, Integer pageSize);
 	
 	//get post by wild card
 	public List<PostDto> searchPost(String keyword);

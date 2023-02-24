@@ -6,6 +6,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.blog.entity.CategoryEntity;
@@ -13,6 +16,7 @@ import com.blog.entity.PostEntity;
 import com.blog.entity.UserEntity;
 import com.blog.exception.ResourceNotFoundException;
 import com.blog.model.PostDto;
+import com.blog.model.PostResponseDto;
 import com.blog.repository.CategoryRepo;
 import com.blog.repository.PostRepo;
 import com.blog.repository.UserRepo;
@@ -80,12 +84,24 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<PostDto> getAllPost() {
+	public PostResponseDto getAllPost(Integer pageNumber, Integer pageSize) {
 		
-		List<PostEntity> postEntities = this.postRepo.findAll();
+		Pageable pageable = PageRequest.of(pageNumber, pageSize);
+		
+		Page<PostEntity> pagePostEntity = this.postRepo.findAll(pageable);
+		
+		List<PostEntity> postEntities = pagePostEntity.getContent();
 		List<PostDto> postDtos = postEntities.stream().map(post -> this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
 		
-		return postDtos;
+		PostResponseDto postResponseDto = new PostResponseDto();
+		
+		postResponseDto.setContent(postDtos);
+		postResponseDto.setPageNumber(pagePostEntity.getNumber());
+		postResponseDto.setPageSize(pagePostEntity.getSize());
+		postResponseDto.setTotalElements(pagePostEntity.getTotalElements());
+		postResponseDto.setTotalPages(pagePostEntity.getTotalPages());
+		postResponseDto.setLastPage(pagePostEntity.isLast());
+		return postResponseDto;
 	}
 
 	@Override
@@ -98,25 +114,55 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<PostDto> getPostsByCategory(Integer categoryId) {
+	public PostResponseDto getPostsByCategory(Integer categoryId, Integer pageNumber, Integer pageSize) {
 		
 		CategoryEntity categoryEntity = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("category", "categoryId" , categoryId));
 		
-		List<PostEntity> postEntities = this.postRepo.findByCategory(categoryEntity);
-		List<PostDto> postDtos = postEntities.stream().map(post -> this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+		Pageable pageable = PageRequest.of(pageNumber, pageSize);
 		
-		return postDtos;
+		Page<PostEntity> postEntities = this.postRepo.findByCategory(categoryEntity, pageable);
+		
+		List<PostEntity> allPostsByCategory = postEntities.getContent();
+		
+//		List<PostEntity> postEntities = this.postRepo.findByCategory(categoryEntity);
+		List<PostDto> postDtos = allPostsByCategory.stream().map(post -> this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+		
+		PostResponseDto postResponseDto = new PostResponseDto();
+		
+		postResponseDto.setContent(postDtos);
+		postResponseDto.setPageNumber(postEntities.getNumber());
+		postResponseDto.setPageSize(postEntities.getSize());
+		postResponseDto.setTotalElements(postEntities.getTotalElements());
+		postResponseDto.setTotalPages(postEntities.getTotalPages());
+		postResponseDto.setLastPage(postEntities.isLast());
+		
+		return postResponseDto;
 	}
 
 	@Override
-	public List<PostDto> getPostsByUser(Integer userId) {
+	public PostResponseDto getPostsByUser(Integer userId, Integer pageNumber, Integer pageSize) {
 		
 		UserEntity userEntity = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user", "userId", userId));
 		
-		List<PostEntity> postEntities = this.postRepo.findByUser(userEntity);
-		List<PostDto> postDtos = postEntities.stream().map(post -> this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
 		
-		return postDtos;
+		Pageable pageable = PageRequest.of(pageNumber, pageSize);
+		
+		Page<PostEntity> postEntities = this.postRepo.findByUser(userEntity, pageable);
+		
+		List<PostEntity> allPostsByUser = postEntities.getContent();
+//		List<PostEntity> postEntities = this.postRepo.findByUser(userEntity);
+		List<PostDto> postDtos = allPostsByUser.stream().map(post -> this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+		
+		PostResponseDto postResponseDto = new PostResponseDto();
+		
+		postResponseDto.setContent(postDtos);
+		postResponseDto.setPageNumber(postEntities.getNumber());
+		postResponseDto.setPageSize(postEntities.getSize());
+		postResponseDto.setTotalElements(postEntities.getTotalElements());
+		postResponseDto.setTotalPages(postEntities.getTotalPages());
+		postResponseDto.setLastPage(postEntities.isLast());
+		
+		return postResponseDto;
 	}
 
 	@Override
