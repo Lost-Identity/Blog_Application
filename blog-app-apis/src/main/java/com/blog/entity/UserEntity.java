@@ -40,8 +40,8 @@ public class UserEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<PostEntity> posts = new HashSet<>();
 	
-//	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//	private Set<CommentEntity> commentEntities = new HashSet<>();
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<CommentEntity> commentEntities = new HashSet<>();
 
 
 }

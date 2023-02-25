@@ -12,5 +12,7 @@ public class CommentDto {
 	private Integer commentId;
 	
 	private String commentContent;
+	
+	private UserDto user;
 
 }

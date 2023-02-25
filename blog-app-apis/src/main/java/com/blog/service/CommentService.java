@@ -5,7 +5,7 @@ import com.blog.model.CommentDto;
 public interface CommentService {
 	
 	//create
-	public CommentDto createComment(CommentDto commentDto, Integer postId);
+	public CommentDto createComment(CommentDto commentDto, Integer userId, Integer postId);
 	
 	
 	//delete
