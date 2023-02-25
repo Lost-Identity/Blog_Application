@@ -18,7 +18,7 @@ public interface PostService {
 	public void deletePost(Integer postId);
 	
 	//get all posts
-	public PostResponseDto getAllPost(Integer pageNumber, Integer pageSize);
+	public PostResponseDto getAllPost(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 	
 	//get single post
 	public PostDto getPostById(Integer postId);
@@ -29,7 +29,7 @@ public interface PostService {
 	//get all posts by user
 	public PostResponseDto getPostsByUser(Integer userId, Integer pageNumber, Integer pageSize);
 	
-	//get post by wild card
+	//get posts
 	public List<PostDto> searchPost(String keyword);
 
 }

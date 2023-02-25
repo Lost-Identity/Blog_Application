@@ -2,13 +2,14 @@ package com.blog.serviceimpl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.blog.entity.CategoryEntity;
@@ -84,9 +85,12 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostResponseDto getAllPost(Integer pageNumber, Integer pageSize) {
+	public PostResponseDto getAllPost(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 		
-		Pageable pageable = PageRequest.of(pageNumber, pageSize);
+		Sort sort = sortDir.equalsIgnoreCase("asc")? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+		
+		
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 		
 		Page<PostEntity> pagePostEntity = this.postRepo.findAll(pageable);
 		
@@ -167,8 +171,10 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public List<PostDto> searchPost(String keyword) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<PostEntity> postEntities = this.postRepo.findByPostTitleContaining(keyword);
+		List<PostDto> postDtos = postEntities.stream().map(post -> this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+		return postDtos;
 	}
 
 }
