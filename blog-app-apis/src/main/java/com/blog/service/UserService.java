@@ -6,6 +6,8 @@ import com.blog.model.UserDto;
 
 public interface UserService {
 	
+	UserDto registerNewUser(UserDto user);
+	
 	UserDto createUser(UserDto user);
 	
 	UserDto upadateUser(UserDto user, Integer userId);

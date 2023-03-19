@@ -5,11 +5,15 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.blog.config.AppConstants;
+import com.blog.entity.RoleEntity;
 import com.blog.entity.UserEntity;
 import com.blog.exception.ResourceNotFoundException;
 import com.blog.model.UserDto;
+import com.blog.repository.RoleRepo;
 import com.blog.repository.UserRepo;
 import com.blog.service.UserService;
 
@@ -21,6 +25,12 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private RoleRepo roleRepo;
 
 	@Override
 	public UserDto createUser(UserDto user) {
@@ -97,6 +107,22 @@ public class UserServiceImpl implements UserService {
 			
 			return userDto;
 			
+	}
+
+	@Override
+	public UserDto registerNewUser(UserDto userDto) {
+		UserEntity userEntity = this.modelMapper.map(userDto, UserEntity.class);
+		
+		//encoded the password
+		userEntity.setPassword(this.passwordEncoder.encode(userEntity.getPassword()));
+		
+		//roles
+		RoleEntity roleEntity = this.roleRepo.findById(AppConstants.NORMAL_USER).get();
+		
+		userEntity.getRoles().add(roleEntity);
+		UserEntity newUser = this.userRepo.save(userEntity);
+		
+		return this.modelMapper.map(newUser, UserDto.class);
 	}
 
 }
